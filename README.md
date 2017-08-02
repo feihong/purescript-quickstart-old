@@ -18,6 +18,13 @@ pulp build
 pulp run
 ```
 
+## Install packages
+
+```
+bower install --save purescript-lists
+bower install --save-dev purescript-spec
+```
+
 ## Start REPL
 
 `pulp repl`
