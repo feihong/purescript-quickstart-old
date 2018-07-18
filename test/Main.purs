@@ -3,13 +3,24 @@ module Test.Main where
 import Prelude
 
 import Chapter2 (diagonal)
+import Effect.Aff (Aff())
 import Data.Ord (abs)
 import Effect (Effect)
 import Euler (euler1)
 import Test.Spec (describe, it)
-import Test.Spec.Assertions (shouldEqual)
+import Test.Spec.Assertions (fail, shouldEqual)
 import Test.Spec.Reporter.Console (consoleReporter)
 import Test.Spec.Runner (run)
+
+
+diffLessThan :: forall t. Ord t => Ring t => Show t => t -> t -> t -> Aff Unit
+diffLessThan v1 v2 max = 
+  let 
+    diff = abs $ v1 - v2
+  in
+    when (diff > max) $
+      fail $ "The difference between " <> show v1 <> " and " <> show v2 <>
+             " is greater than " <> show max
 
 main :: Effect Unit
 main = run [consoleReporter] do
@@ -24,10 +35,5 @@ main = run [consoleReporter] do
       euler1 `shouldEqual` 233168
 
   describe "Chapter2" do
-    it "diagonal" 
-      let 
-        result = diagonal 4.0 5.0
-        expected = 6.4
-        diff = abs $ result - expected
-      in do
-        (diff < 0.01) `shouldEqual` true
+    it "diagonal" do
+      diffLessThan (diagonal 4.0 5.0) 6.403 0.001
