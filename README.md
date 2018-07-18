@@ -1,11 +1,34 @@
 # Feihong's PureScript Quickstart
 
-## Installation
+## Prerequisites
 
-[Install Node](https://github.com/feihong/node-quickstart#installation)
+    yarn global add purescript pulp psc-package
 
-```
-npm install -g purescript pulp bower
-```
+## Create new project
 
-Source: [Getting Started with PureScript](https://github.com/purescript/documentation/blob/master/guides/Getting-Started.md#getting-started-with-purescript)
+    cd <project-directory>
+    pulp --psc-package init
+
+## Commands
+
+Install dependencies
+
+    psc-package install
+
+Build and run 
+
+    pulp run
+
+Build
+
+    pulp build
+
+Run tests
+
+    pulp test
+
+
+## Links
+
+- [Getting Started with PureScript](https://github.com/purescript/documentation/blob/master/guides/Getting-Started.md#getting-started-with-purescript)
+- [Setting up PureScript in March 2018](https://qiita.com/kimagure/items/570e6f2bbce5b4724564)
