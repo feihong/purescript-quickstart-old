@@ -1,9 +1,20 @@
 module Test.Main where
 
 import Prelude
-import Control.Monad.Eff (Eff)
-import Control.Monad.Eff.Console (CONSOLE, log)
+import Effect (Effect)
+import Test.Spec (describe, it)
+import Test.Spec.Assertions (shouldEqual)
+import Test.Spec.Reporter.Console (consoleReporter)
+import Test.Spec.Runner (run)
 
-main :: forall e. Eff (console :: CONSOLE | e) Unit
-main = do
-  log "You should add some tests."
+import Euler (euler1)
+
+main :: Effect Unit
+main = run [consoleReporter] do
+  describe "Hello Test" do
+    it "addition" do
+      (1 + 2) `shouldEqual` 3
+
+  describe "Project Euler" do
+    it "#1" do
+      euler1 `shouldEqual` 233168

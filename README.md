@@ -27,6 +27,9 @@ Run tests
 
     pulp test
 
+Start repl
+
+    pulp repl
 
 ## Links
 
