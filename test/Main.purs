@@ -2,10 +2,10 @@ module Test.Main where
 
 import Prelude
 
-import Chapter2 (diagonal)
-import Effect.Aff (Aff())
+import Chapter2 (circleArea, diagonal)
 import Data.Ord (abs)
 import Effect (Effect)
+import Effect.Aff (Aff)
 import Euler (euler1)
 import Test.Spec (describe, it)
 import Test.Spec.Assertions (fail, shouldEqual)
@@ -37,3 +37,5 @@ main = run [consoleReporter] do
   describe "Chapter2" do
     it "diagonal" do
       diffLessThan (diagonal 4.0 5.0) 6.403 0.001
+    it "circleArea" do
+      diffLessThan (circleArea 3.5) 38.485 0.001
