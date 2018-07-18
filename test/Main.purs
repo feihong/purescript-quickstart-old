@@ -2,6 +2,8 @@ module Test.Main where
 
 import Prelude
 
+import Chapter2 (diagonal)
+import Data.Ord (abs)
 import Effect (Effect)
 import Euler (euler1)
 import Test.Spec (describe, it)
@@ -20,3 +22,12 @@ main = run [consoleReporter] do
   describe "Project Euler" do
     it "#1" do
       euler1 `shouldEqual` 233168
+
+  describe "Chapter2" do
+    it "diagonal" 
+      let 
+        result = diagonal 4.0 5.0
+        expected = 6.4
+        diff = abs $ result - expected
+      in do
+        (diff < 0.01) `shouldEqual` true
