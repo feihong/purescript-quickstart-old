@@ -15,6 +15,10 @@ Install dependencies
 
     psc-package install
 
+Install a particular package, e.g. purescript-strings
+
+    psc-package install strings
+
 Build and run 
 
     pulp run
