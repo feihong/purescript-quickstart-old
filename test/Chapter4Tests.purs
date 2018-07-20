@@ -4,6 +4,7 @@ import Chapter4
 import Prelude
 
 import Data.Array ((..))
+import Data.Path as DP
 import Test.Spec (Spec, describe, it)
 import Test.Spec.Assertions (shouldEqual)
 
@@ -46,3 +47,6 @@ spec =
     it "reverse" do
       reverse [] :: Array Int `shouldEqual` []
       reverse (1 .. 5) `shouldEqual` (5 .. 1)
+
+    it "onlyFiles" do
+      show (onlyFiles DP.root) `shouldEqual` "[/bin/cp,/bin/ls,/bin/mv,/etc/hosts,/home/user/todo.txt,/home/user/code/js/test.js,/home/user/code/haskell/test.hs]"

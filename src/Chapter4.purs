@@ -3,9 +3,11 @@ module Chapter4 where
 import Prelude
 
 import Control.MonadZero (guard)
-import Data.Array (filter, length, cons, (..))
+import Data.Array (filter, length, cons, (:), (..))
 import Data.Array.Partial (head, tail)
 import Data.Foldable (foldl)
+import Data.Maybe (Maybe(..))
+import Data.Path (Path, isDirectory, ls, size, root)
 import Partial.Unsafe (unsafePartial)
 
 isEven :: Int -> Boolean
@@ -85,3 +87,22 @@ count p = count' 0
 
 reverse :: forall a. Array a -> Array a
 reverse = foldl (\acc n -> cons n acc) []
+
+allFiles :: Path -> Array Path
+allFiles path = path : do
+  child <- ls path
+  allFiles child
+
+onlyFiles :: Path -> Array Path
+onlyFiles = allFiles >>> filter (isDirectory >>> not)
+
+largestAndSmallest :: { smallest :: Maybe Int, largest :: Maybe Int }
+largestAndSmallest = 
+  (onlyFiles >>> foldl inner {largest: Nothing, smallest: Nothing}) root
+  where 
+    inner {largest, smallest} file =
+      let size' = size file          
+      in {
+          largest: max <$> size' <*> largest, 
+          smallest: min <$> size' <*> smallest
+        }
