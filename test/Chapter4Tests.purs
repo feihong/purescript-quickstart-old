@@ -1,9 +1,9 @@
 module Chapter4Tests where
 
+import Chapter4
 import Prelude
 
-import Chapter4
-import Data.Array((..))
+import Data.Array ((..))
 import Test.Spec (Spec, describe, it)
 import Test.Spec.Assertions (shouldEqual)
 
@@ -24,3 +24,25 @@ spec =
       triples 4 `shouldEqual` []
       triples 10 `shouldEqual` [[3,4,5]]
       triples 15 `shouldEqual` [[3,4,5],[5,12,13],[6,8,10]]
+
+    it "allTrue" do
+      allTrue [true, true, true] `shouldEqual` true
+      allTrue [true, true, false] `shouldEqual` false
+      allTrue [false, true, true] `shouldEqual` false
+
+    it "mysteryFunction" do
+      mysteryFunction [] `shouldEqual` false
+      mysteryFunction [false] `shouldEqual` true
+      mysteryFunction [false, true] `shouldEqual` true
+      mysteryFunction [false, true, true] `shouldEqual` true
+
+    it "count" do
+      let 
+        divisibleBy3 n = n `mod` 3 == 0      
+      count divisibleBy3 (1 .. 20) `shouldEqual` 6
+      count divisibleBy3 [] `shouldEqual` 0
+      count divisibleBy3 [1,2,4,5] `shouldEqual` 0
+
+    it "reverse" do
+      reverse [] :: Array Int `shouldEqual` []
+      reverse (1 .. 5) `shouldEqual` (5 .. 1)
