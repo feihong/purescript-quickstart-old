@@ -4,6 +4,7 @@ import Prelude
 
 import Chapter2 (circleArea, diagonal)
 import Chapter3Tests as Ch3
+import Chapter4Tests as Ch4
 import Data.Ord (abs)
 import Effect (Effect)
 import Effect.Aff (Aff)
@@ -42,3 +43,4 @@ main = run [consoleReporter] do
       diffLessThan (circleArea 3.5) 38.485 0.001
 
   Ch3.spec
+  Ch4.spec

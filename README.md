@@ -31,6 +31,10 @@ Run tests
 
     pulp test
 
+Run tests whenever source file changes
+
+    pulp -w test
+
 Start repl
 
     pulp repl
