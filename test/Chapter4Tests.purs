@@ -4,7 +4,8 @@ import Chapter4
 import Prelude
 
 import Data.Array ((..))
-import Data.Path as DP
+import Data.Maybe (Maybe(..))
+import Data.Path
 import Test.Spec (Spec, describe, it)
 import Test.Spec.Assertions (shouldEqual)
 
@@ -49,4 +50,15 @@ spec =
       reverse (1 .. 5) `shouldEqual` (5 .. 1)
 
     it "onlyFiles" do
-      show (onlyFiles DP.root) `shouldEqual` "[/bin/cp,/bin/ls,/bin/mv,/etc/hosts,/home/user/todo.txt,/home/user/code/js/test.js,/home/user/code/haskell/test.hs]"
+      show (onlyFiles root) `shouldEqual` "[/bin/cp,/bin/ls,/bin/mv,/etc/hosts,/home/user/todo.txt,/home/user/code/js/test.js,/home/user/code/haskell/test.hs]"
+
+    it "largestAndSmallest" do
+      largestAndSmallest `shouldEqual` 
+        {
+          smallest: Just $ File "/etc/hosts" 300,
+          largest: Just $ File "/home/user/code/js/test.js" 40000
+        }
+
+    it "whereIs" do
+      whereIs "/bin/ls" `shouldEqual` (Just $ File "/bin/ls" 34700)
+      whereIs "/bin/uname" `shouldEqual` Nothing

@@ -1,14 +1,13 @@
 module Chapter4 where
   
-import Prelude
-
 import Control.MonadZero (guard)
 import Data.Array (filter, length, cons, (:), (..))
 import Data.Array.Partial (head, tail)
 import Data.Foldable (foldl)
-import Data.Maybe (Maybe(..))
-import Data.Path (Path, isDirectory, ls, size, root)
+import Data.Maybe (Maybe(..), maybe)
+import Data.Path (Path, filename, isDirectory, ls, root, size)
 import Partial.Unsafe (unsafePartial)
+import Prelude
 
 isEven :: Int -> Boolean
 isEven 0 = true
@@ -96,13 +95,32 @@ allFiles path = path : do
 onlyFiles :: Path -> Array Path
 onlyFiles = allFiles >>> filter (isDirectory >>> not)
 
-largestAndSmallest :: { smallest :: Maybe Int, largest :: Maybe Int }
+largestAndSmallest :: { smallest :: Maybe Path, largest :: Maybe Path }
 largestAndSmallest = 
-  (onlyFiles >>> foldl inner {largest: Nothing, smallest: Nothing}) root
+  (onlyFiles >>> foldl inner {largest: Nothing,  smallest: Nothing}) root
   where 
-    inner {largest, smallest} file =
-      let size' = size file          
-      in {
-          largest: max <$> size' <*> largest, 
-          smallest: min <$> size' <*> smallest
-        }
+    inner {largest, smallest} file = 
+      let l' = maybe file (maxFile file) largest
+          s' = maybe file (minFile file) smallest
+      in {largest: Just l', smallest: Just s'}
+    maxFile p1 p2 = 
+      case [size p1, size p2] of
+        [Just s1, Just s2] -> if s1 > s2 then p1 else p2
+        _ -> p1   -- unreachable
+    minFile p1 p2 = 
+      case [size p1, size p2] of
+        [Just s1, Just s2] -> if s1 < s2 then p1 else p2
+        _ -> p1   -- unreachable
+
+whereIs' :: String -> Path -> Array Path
+whereIs' name path = do
+  child <- ls path
+  if filename child == name 
+    then pure child
+    else whereIs' name child
+
+whereIs  :: String -> Maybe Path
+whereIs name = 
+  case whereIs' name root of
+    [] -> Nothing
+    x -> Just $ unsafePartial head x
