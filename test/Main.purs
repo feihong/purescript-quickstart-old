@@ -5,6 +5,7 @@ import Prelude
 import Chapter2 (circleArea, diagonal)
 import Chapter3Tests as Ch3
 import Chapter4Tests as Ch4
+import OperatorTests as OperatorTests
 import Data.Ord (abs)
 import Effect (Effect)
 import Effect.Aff (Aff)
@@ -26,14 +27,10 @@ diffLessThan v1 v2 max =
 
 main :: Effect Unit
 main = run [consoleReporter] do
-  describe "Arithmetic" do
-    it "addition" do
-      (1 + 2) `shouldEqual` 3
+  describe "Miscellaneous" do
     it "mod" do
-      (77 `mod` 10) `shouldEqual` 7
-
-  describe "Project Euler" do
-    it "#1" do
+      (77 `mod` 10) `shouldEqual` 7    
+    it "Project Euler #1" do
       euler1 `shouldEqual` 233168
 
   describe "Chapter2" do
@@ -44,3 +41,4 @@ main = run [consoleReporter] do
 
   Ch3.spec
   Ch4.spec
+  OperatorTests.spec

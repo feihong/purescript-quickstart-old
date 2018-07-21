@@ -1,6 +1,6 @@
 module Chapter3Tests where
 
-import Prelude (Unit, discard)
+import Prelude
 
 import Chapter3 
 import Data.Array (toUnfoldable)
