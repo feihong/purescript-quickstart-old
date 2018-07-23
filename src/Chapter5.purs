@@ -1,8 +1,10 @@
 module Chapter5 where
 
-import Prelude
 import Data.Picture
+import Prelude
+
 import Data.Maybe (Maybe(..))
+import Math as Math
 
 factorial :: Int -> Int
 factorial 0 = 1
@@ -46,3 +48,10 @@ expandAndCenter x = x
 extractText :: Shape -> Maybe String
 extractText (Text _ text) = Just text
 extractText _ = Nothing
+
+area :: Shape -> Number
+area (Circle _ r) = Math.pi * r * r
+area (Rectangle _ w h) = w * h
+area _ = 0.0
+
+-- Skip the Clipped data constructor exercise
