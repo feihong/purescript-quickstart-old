@@ -21,20 +21,20 @@ data Shape
   | Line Point Point
   | Text Point String
 
-showShape :: Shape -> String
-showShape (Circle c r) =
-  "Circle [center: " <> showPoint c <> ", radius: " <> show r <> "]"
-showShape (Rectangle c w h) =
-  "Rectangle [center: " <> showPoint c <> ", width: " <> show w <> ", height: " <> show h <> "]"
-showShape (Line start end) =
-  "Line [start: " <> showPoint start <> ", end: " <> showPoint end <> "]"
-showShape (Text loc text) =
-  "Text [location: " <> showPoint loc <> ", text: " <> show text <> "]"
+instance showShape :: Show Shape where
+  show (Circle c r) =
+    "Circle [center: " <> showPoint c <> ", radius: " <> show r <> "]"
+  show (Rectangle c w h) =
+    "Rectangle [center: " <> showPoint c <> ", width: " <> show w <> ", height: " <> show h <> "]"
+  show (Line start end) =
+    "Line [start: " <> showPoint start <> ", end: " <> showPoint end <> "]"
+  show (Text loc text) =
+    "Text [location: " <> showPoint loc <> ", text: " <> show text <> "]"
 
 type Picture = Array Shape
 
 showPicture :: Picture -> Array String
-showPicture = map showShape
+showPicture = map show
 
 data Bounds = Bounds
   { top    :: Number
