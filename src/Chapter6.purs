@@ -2,8 +2,9 @@ module Chapter6 where
 
 import Prelude
 
-import Data.Foldable (class Foldable, foldl, foldr, foldMap)
 import Data.Array ((:))
+import Data.Foldable (class Foldable, foldMap, foldl, foldr, maximum)
+import Partial.Unsafe (unsafePartial)
 
 newtype Complex = Complex
   { real :: Number
@@ -60,3 +61,4 @@ instance foldableOneMore :: Foldable f => Foldable (OneMore f) where
   foldl f b (OneMore x fx) = foldl f (f b x) fx
   foldr f b (OneMore x fx) = f x $ foldr f b fx
   foldMap f (OneMore x fx) = f x <> foldMap f fx
+
