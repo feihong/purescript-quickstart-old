@@ -5,6 +5,7 @@ import Prelude
 import Chapter2 (circleArea, diagonal)
 import Chapter3Tests as Ch3
 import Chapter4Tests as Ch4
+import Chapter6Tests as Ch6
 import OperatorTests as OperatorTests
 import Data.Ord (abs)
 import Effect (Effect)
@@ -38,7 +39,9 @@ main = run [consoleReporter] do
       diffLessThan (diagonal 4.0 5.0) 6.403 0.001
     it "circleArea" do
       diffLessThan (circleArea 3.5) 38.485 0.001
-
+  
+  OperatorTests.spec
   Ch3.spec
   Ch4.spec
-  OperatorTests.spec
+  Ch6.spec
+  

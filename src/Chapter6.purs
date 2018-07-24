@@ -2,6 +2,9 @@ module Chapter6 where
 
 import Prelude
 
+import Data.Foldable (class Foldable, foldl, foldr, foldMap)
+import Data.Array ((:))
+
 newtype Complex = Complex
   { real :: Number
   , imaginary :: Number
@@ -28,6 +31,11 @@ instance semigroupNonEmpty :: Semigroup (NonEmpty a) where
 instance functorNonEmpty :: Functor NonEmpty where
   map f (NonEmpty v arr) = NonEmpty (f v) (map f arr)
 
+instance foldableNonEmpty :: Foldable NonEmpty where
+  foldl f b (NonEmpty x xs) = foldl f b (x : xs)
+  foldr f b (NonEmpty x xs) = foldr f b (x : xs)
+  foldMap f (NonEmpty x xs) = foldMap f (x : xs)
+
 data Extended a 
   = Finite a 
   | Infinite
@@ -42,3 +50,13 @@ instance ordExtended :: Ord a => Ord (Extended a) where
   compare Infinite (Finite _) = GT
   compare Infinite Infinite = EQ
   compare (Finite x) (Finite y) = compare x y
+
+-- Given a type constructor f which defines an ordered container (and so has a
+-- Foldable instance), we can create a new container type which includes an 
+-- extra element at the front
+data OneMore f a = OneMore a (f a)
+
+instance foldableOneMore :: Foldable f => Foldable (OneMore f) where
+  foldl f b (OneMore x fx) = foldl f (f b x) fx
+  foldr f b (OneMore x fx) = foldr f (f x b) fx
+  foldMap f (OneMore x fx) = f x <> foldMap f fx
