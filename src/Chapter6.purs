@@ -2,8 +2,10 @@ module Chapter6 where
 
 import Prelude
 
-import Data.Array ((:))
+import Data.Array ((:), null)
+import Data.Array.Partial (head, tail)
 import Data.Foldable (class Foldable, foldMap, foldl, foldr, maximum)
+import Data.Maybe (fromJust)
 import Partial.Unsafe (unsafePartial)
 
 newtype Complex = Complex
@@ -62,3 +64,44 @@ instance foldableOneMore :: Foldable f => Foldable (OneMore f) where
   foldr f b (OneMore x fx) = f x $ foldr f b fx
   foldMap f (OneMore x fx) = f x <> foldMap f fx
 
+unsafeMaxArray :: Partial => Array Int -> Int
+unsafeMaxArray = fromJust <<< maximum
+
+{-
+There are two laws for the Action type class: 
+
+  act mempty a = a
+  act (m1 <> m2) a = act m1 (act m2 a)
+
+That is, the action respects the operations defined by the Monoid class. 
+-}
+
+class Monoid m <= Action m a where
+  act :: m -> a -> a
+
+newtype Multiply = Multiply Int
+
+instance semigroupMultiply :: Semigroup Multiply where
+  append (Multiply n) (Multiply m) = Multiply (n * m)
+
+instance monoidMultiply :: Monoid Multiply where
+  mempty = Multiply 1
+
+instance repeatAction :: Action Multiply String where
+  act (Multiply 1) s = s
+  act (Multiply n) s | n <= 0 = ""
+  act (Multiply n) s = s <> act (Multiply $ n - 1) s
+
+-- Write an instance Action m a => Action m (Array a), where the action on
+-- arrays is defined by acting on each array element independently
+instance arrayAction :: Action m a => Action m (Array a) where
+  act _ [] = []
+  act m arr =
+    act m (unsafePartial head arr) : act m (unsafePartial tail arr)
+
+newtype Self m = Self m
+
+-- Write an instance for Action m (Self m), where the monoid m acts on itself 
+-- using append
+instance selfAction :: Action m m => Action m (Self m) where
+  act m (Self a) = Self (act m a)
