@@ -58,5 +58,5 @@ data OneMore f a = OneMore a (f a)
 
 instance foldableOneMore :: Foldable f => Foldable (OneMore f) where
   foldl f b (OneMore x fx) = foldl f (f b x) fx
-  foldr f b (OneMore x fx) = foldr f (f x b) fx
+  foldr f b (OneMore x fx) = f x $ foldr f b fx
   foldMap f (OneMore x fx) = f x <> foldMap f fx
