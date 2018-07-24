@@ -2,9 +2,10 @@ module Chapter6 where
 
 import Prelude
 
-import Data.Array ((:), null)
+import Data.Array ((:), length, nubByEq)
 import Data.Array.Partial (head, tail)
 import Data.Foldable (class Foldable, foldMap, foldl, foldr, maximum)
+import Data.Hashable (class Hashable, hash, hashEqual)
 import Data.Maybe (fromJust)
 import Partial.Unsafe (unsafePartial)
 
@@ -104,4 +105,18 @@ newtype Self m = Self m
 -- Write an instance for Action m (Self m), where the monoid m acts on itself 
 -- using append
 instance selfAction :: Action m m => Action m (Self m) where
-  act m (Self a) = Self (act m a)
+  act m (Self a) = Self (m <> a)
+
+hasHashDuplicates :: forall a. Hashable a => Array a -> Boolean
+hasHashDuplicates arr = length arr > length arr'
+  where arr' = arr # nubByEq hashEqual
+
+newtype Hour = Hour Int
+
+instance eqHour :: Eq Hour where
+  eq (Hour n) (Hour m) = mod n 12 == mod m 12
+
+instance hashHour :: Hashable Hour where
+  hash (Hour n) = hash n
+
+-- Skip the proof exercises
