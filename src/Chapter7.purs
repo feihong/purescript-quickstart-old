@@ -16,9 +16,22 @@ combineMaybe (Just fx) = Just <$> fx
 
 type Errors = Array String
 
-nonEmpty :: String -> String -> V Errors Unit
-nonEmpty field "" = invalid ["Field '" <> field <> "' cannot be empty"]
-nonEmpty _     _  = pure unit
+matches :: String -> Regex -> String -> V Errors Unit
+matches _ regex value | test regex value = pure unit
+matches field _ _ = invalid ["Field '" <> field <> 
+                    "' did not match the required format"]
+
+whitespaceRegex :: Regex
+whitespaceRegex =
+  unsafePartial
+    case regex "^[\\s]+$" noFlags of
+      Right r -> r
+
+nonWhitespace :: String -> String -> V Errors Unit
+nonWhitespace field "" = invalid ["Field " <> field <> " cannot be empty"]
+nonWhitespace field value | test whitespaceRegex value = 
+  invalid ["Field " <> field <> " cannot be whitespace"]
+nonWhitespace _ _ = pure unit
 
 stateRegex :: Regex
 stateRegex =
@@ -34,11 +47,8 @@ validateState text =
 
 validateAddress :: Address -> V Errors Address
 validateAddress (Address o) =
-  address <$> (nonEmpty "Street" o.street *> pure o.street)
-          <*> (nonEmpty "City"   o.city   *> pure o.city)
+  address <$> (nonWhitespace "Street" o.street *> pure o.street)
+          <*> (nonWhitespace "City"   o.city   *> pure o.city)
           <*> (validateState o.state *> pure o.state)
 
-matches :: String -> Regex -> String -> V Errors Unit
-matches _ regex value | test regex value = pure unit
-matches field _ _ = invalid ["Field '" <> field <> 
-                    "' did not match the required format"]
+

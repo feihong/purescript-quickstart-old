@@ -30,3 +30,7 @@ spec = describe "Chapter 7" do
     (address "123 Main St" "Chicago" "IL" # validateAddress # getErrors)
       `shouldEqual` 
       []
+  it "Validate street and city are not whitespace" do
+    (address "    " "" "IL" # validateAddress # getErrors)
+      `shouldEqual` 
+      ["Field Street cannot be whitespace", "Field City cannot be empty"]
