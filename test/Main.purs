@@ -6,6 +6,7 @@ import Chapter2 (circleArea, diagonal)
 import Chapter3Tests as Ch3
 import Chapter4Tests as Ch4
 import Chapter6Tests as Ch6
+import Chapter7Tests as Ch7
 import OperatorTests as OperatorTests
 import Data.Ord (abs)
 import Effect (Effect)
@@ -44,4 +45,4 @@ main = run [consoleReporter] do
   Ch3.spec
   Ch4.spec
   Ch6.spec
-  
+  Ch7.spec  
