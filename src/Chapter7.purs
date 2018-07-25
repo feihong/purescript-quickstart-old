@@ -51,4 +51,17 @@ validateAddress (Address o) =
           <*> (nonWhitespace "City"   o.city   *> pure o.city)
           <*> (validateState o.state *> pure o.state)
 
+data Tree a = Leaf | Branch (Tree a) a (Tree a)
 
+instance functorTree :: Functor Tree where
+  map f Leaf = Leaf
+  map f (Branch l x r) = Branch (f <$> l) (f x) (f <$> r)
+
+instance applyTree :: Apply Tree where
+  apply (Branch _ f _) t@(Branch _ _ _) = f <$> t
+  apply _ _ = Leaf
+
+instance applicativeTree :: Applicative Tree where
+  pure x = Branch Leaf x Leaf
+
+-- traverse :: forall a  f. Applicative f => (a -> f b) -> List a -> f (List b)
