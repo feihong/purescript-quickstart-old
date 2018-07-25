@@ -5,16 +5,28 @@ import Prelude
 
 import Control.Apply (lift2)
 import Data.AddressBook (address)
+import Data.Foldable (foldl, foldr, foldMap)
+import Data.Array (snoc)
+import Data.Either (Either(..))
 import Data.Maybe (Maybe(..))
 import Data.Validation.Semigroup (V, toEither)
 import Test.Spec (Spec, describe, it)
-import Data.Either (Either(..))
 import Test.Spec.Assertions (shouldEqual)
 
 getErrors :: forall a. V (Array String) a -> Array String
 getErrors v = case toEither(v) of 
   Left errors -> errors
   Right _ -> []
+
+empty :: Array Int
+empty = []
+
+tree1 = Branch Leaf 4 Leaf
+tree2 = Branch (Branch Leaf 3 Leaf) 4 (Branch Leaf 5 Leaf)
+tree3 = Branch 
+    (Branch (Branch Leaf 1 Leaf) 2 (Branch Leaf 3 Leaf)) 
+    4 
+    (Branch Leaf 5 Leaf)
 
 spec :: Spec Unit
 spec = describe "Chapter 7" do
@@ -34,3 +46,17 @@ spec = describe "Chapter 7" do
     (address "    " "" "IL" # validateAddress # getErrors)
       `shouldEqual` 
       ["Field Street cannot be whitespace", "Field City cannot be empty"]
+  it "Tree foldl" do
+    foldl snoc empty Leaf `shouldEqual` []
+    foldl snoc empty tree1 `shouldEqual` [4]
+    foldl snoc empty tree2 `shouldEqual` [3,4,5]
+    foldl snoc empty tree3 `shouldEqual` [1,2,3,4,5]
+  it "Tree foldr" do
+    foldr (flip snoc) empty Leaf `shouldEqual` []
+    foldr (flip snoc) empty tree1 `shouldEqual` [4]
+    foldr (flip snoc) empty tree2 `shouldEqual` [5,4,3]
+    foldr (flip snoc) empty tree3 `shouldEqual` [5,4,3,2,1]
+  it "Tree foldMap" do
+    foldMap (\v -> [v]) tree1 `shouldEqual` [4]
+    foldMap (\v -> [v]) tree2 `shouldEqual` [3,4,5]
+    foldMap (\v -> [v]) tree3 `shouldEqual` [1,2,3,4,5]

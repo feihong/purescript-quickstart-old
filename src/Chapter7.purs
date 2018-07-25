@@ -4,9 +4,11 @@ import Data.AddressBook
 import Prelude
 
 import Data.Either (Either(..))
+import Data.Foldable (foldMap, foldl, foldr)
 import Data.Maybe (Maybe(..))
 import Data.String.Regex (Regex, test, regex)
 import Data.String.Regex.Flags (noFlags)
+import Data.Traversable (class Foldable, class Traversable)
 import Data.Validation.Semigroup (V, invalid)
 import Partial.Unsafe (unsafePartial)
 
@@ -64,4 +66,19 @@ instance applyTree :: Apply Tree where
 instance applicativeTree :: Applicative Tree where
   pure x = Branch Leaf x Leaf
 
--- traverse :: forall a  f. Applicative f => (a -> f b) -> List a -> f (List b)
+instance foldableTree :: Foldable Tree where
+  foldl f b Leaf = b
+  foldl f b (Branch l x r) = foldl f cv r
+    where lv = foldl f b l
+          cv = f lv x
+
+  foldr f b Leaf = b
+  foldr f b (Branch l x r) = foldr f cv l
+    where rv = foldr f b r
+          cv = f x rv
+
+  foldMap f t = foldl (\a -> append a <<< f) mempty t
+
+-- class (Functor t, Foldable t) <= Traversable t where
+--   traverse :: forall a b f. Applicative f => (a -> f b) -> t a -> f (t b)
+--   sequence :: forall a f. Applicative f => t (f a) -> f (t a)
