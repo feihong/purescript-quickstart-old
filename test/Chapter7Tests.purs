@@ -3,7 +3,7 @@ module Chapter7Tests where
 import Chapter7
 import Prelude
 
-import Control.Apply (lift2)
+import Control.Apply (lift2, (*>), applySecond)
 import Data.AddressBook (address)
 import Data.Foldable (foldl, foldr, foldMap)
 import Data.Array (snoc)
@@ -12,6 +12,7 @@ import Data.Maybe (Maybe(..))
 import Data.Validation.Semigroup (V, toEither)
 import Test.Spec (Spec, describe, it)
 import Test.Spec.Assertions (shouldEqual)
+
 
 getErrors :: forall a. V (Array String) a -> Array String
 getErrors v = case toEither(v) of 
@@ -35,6 +36,23 @@ spec = describe "Chapter 7" do
     lift2 (*) (Just 4) (Just 2) `shouldEqual` Just 8
     lift2 (-) Nothing (Just 5) `shouldEqual` Nothing
     lift2 mod (Just 33) (Just 10) `shouldEqual` Just 3
+
+  it "Sequencing operator *>" do
+      -- *> is actually shorthand for the applySecond function      
+      applySecond (Just 'a') (Just 2) `shouldEqual` Just 2
+      applySecond (Just 'a') (Nothing :: Maybe Int) `shouldEqual` Nothing
+      (Just 400 *> Just "foo") `shouldEqual` Just "foo"
+      (Just 401 *> (Nothing :: Maybe String)) `shouldEqual` Nothing
+      ((Right 42 :: Either String Int) *> pure 45) 
+        `shouldEqual` pure 45
+      ((Left "whoa now" :: Either String Int) *> pure 45)
+        `shouldEqual` Left "whoa now"
+
+  it "nonWhitespace" do
+    nonWhitespace "Street" "111 Pure Ave" `shouldEqual` pure (unit)
+    (nonWhitespace "Street" "   " # toEither) 
+      `shouldEqual` Left ["Field Street cannot be whitespace"]
+
   it "Validate state is 2 alphabetic characters" do
     (address "123 Main St" "Chicago" "Illinois" # validateAddress # getErrors)
       `shouldEqual` 
@@ -42,20 +60,25 @@ spec = describe "Chapter 7" do
     (address "123 Main St" "Chicago" "IL" # validateAddress # getErrors)
       `shouldEqual` 
       []
+
   it "Validate street and city are not whitespace" do
     (address "    " "" "IL" # validateAddress # getErrors)
       `shouldEqual` 
       ["Field Street cannot be whitespace", "Field City cannot be empty"]
+
   it "Tree foldl" do
     foldl snoc empty Leaf `shouldEqual` []
     foldl snoc empty tree1 `shouldEqual` [4]
     foldl snoc empty tree2 `shouldEqual` [3,4,5]
     foldl snoc empty tree3 `shouldEqual` [1,2,3,4,5]
+
   it "Tree foldr" do
-    foldr (flip snoc) empty Leaf `shouldEqual` []
-    foldr (flip snoc) empty tree1 `shouldEqual` [4]
-    foldr (flip snoc) empty tree2 `shouldEqual` [5,4,3]
-    foldr (flip snoc) empty tree3 `shouldEqual` [5,4,3,2,1]
+    let fsnoc = flip snoc
+    foldr fsnoc empty Leaf `shouldEqual` []
+    foldr fsnoc empty tree1 `shouldEqual` [4]
+    foldr fsnoc empty tree2 `shouldEqual` [5,4,3]
+    foldr fsnoc empty tree3 `shouldEqual` [5,4,3,2,1]
+
   it "Tree foldMap" do
     foldMap (\v -> [v]) tree1 `shouldEqual` [4]
     foldMap (\v -> [v]) tree2 `shouldEqual` [3,4,5]
