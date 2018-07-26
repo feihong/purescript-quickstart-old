@@ -67,7 +67,7 @@ spec = describe "Chapter 7" do
     (address "    " "" "IL" # validateAddress # getErrors)
       `shouldEqual` 
       ["Field Street cannot be whitespace", "Field City cannot be empty"]
-  
+
   it "traverse" do
     traverse (\v -> Just $ v * 2) [1, 2, 3] `shouldEqual` Just [2,4,6]
     traverse (\v -> if v == 2 then Nothing else Just v) [1,2,3] 

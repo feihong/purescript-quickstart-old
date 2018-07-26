@@ -8,7 +8,7 @@ import Data.Foldable (foldMap, foldl, foldr)
 import Data.Maybe (Maybe(..))
 import Data.String.Regex (Regex, test, regex)
 import Data.String.Regex.Flags (noFlags)
-import Data.Traversable (class Foldable, class Traversable)
+import Data.Traversable (class Foldable, class Traversable, traverse, sequence)
 import Data.Validation.Semigroup (V, invalid)
 import Partial.Unsafe (unsafePartial)
 
@@ -78,6 +78,14 @@ instance foldableTree :: Foldable Tree where
           cv = f x rv
 
   foldMap f t = foldl (\a -> append a <<< f) mempty t
+
+instance traversableTree :: Traversable Tree where
+  traverse f Leaf = pure Leaf
+  traverse f (Branch l x r) = 
+    Branch <$> traverse f l <*> f x <*> traverse f r
+
+  sequence Leaf = pure Leaf
+  sequence (Branch l x r) = pure Leaf
 
 -- class (Functor t, Foldable t) <= Traversable t where
 --   traverse :: forall a b f. Applicative f => (a -> f b) -> t a -> f (t b)
