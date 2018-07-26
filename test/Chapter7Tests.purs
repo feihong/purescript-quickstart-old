@@ -4,7 +4,8 @@ import Chapter7
 import Prelude
 
 import Control.Apply (lift2, applySecond)
-import Data.AddressBook (address)
+import Data.AddressBook (PhoneType(..), address, phoneNumber)
+import Data.AddressBook.Validation (validatePhoneNumber)
 import Data.Array (snoc)
 import Data.Either (Either(..))
 import Data.Foldable (foldl, foldr, foldMap)
@@ -71,6 +72,22 @@ spec = describe "Chapter 7" do
     traverse (\v -> Just $ v * 2) [1, 2, 3] `shouldEqual` Just [2,4,6]
     traverse (\v -> if v == 2 then Nothing else Just v) [1,2,3] 
       `shouldEqual` Nothing
+  it "traverse validatePhoneNumber"  do
+    let numbers = [
+          phoneNumber HomePhone "666-111-2222",
+          phoneNumber WorkPhone "222-555-8888"
+        ]
+        err = "Field 'Number' did not match the required format"
+    traverse validatePhoneNumber numbers 
+      `shouldEqual` pure numbers
+    (traverse validatePhoneNumber [
+        phoneNumber HomePhone "444-555-6666", 
+        phoneNumber WorkPhone "111-222-333"
+      ] # toEither) `shouldEqual` Left [err]
+    (traverse validatePhoneNumber [
+        phoneNumber HomePhone "444-5555-6666", 
+        phoneNumber WorkPhone "111-222-333"
+      ] # toEither) `shouldEqual` Left [err, err]
 
   it "sequence" do
     sequence (Just [1,2,3]) `shouldEqual` [Just 1, Just 2, Just 3]

@@ -22,6 +22,9 @@ newtype PhoneNumber = PhoneNumber
   , number :: String
   }
 
+derive instance eqPhoneType :: Eq PhoneType
+derive instance eqPhoneNumber :: Eq PhoneNumber
+
 phoneNumber :: PhoneType -> String -> PhoneNumber
 phoneNumber ty number = PhoneNumber
   { "type": ty
