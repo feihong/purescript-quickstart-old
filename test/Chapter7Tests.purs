@@ -72,6 +72,7 @@ spec = describe "Chapter 7" do
     traverse (\v -> Just $ v * 2) [1, 2, 3] `shouldEqual` Just [2,4,6]
     traverse (\v -> if v == 2 then Nothing else Just v) [1,2,3] 
       `shouldEqual` Nothing
+
   it "traverse validatePhoneNumber"  do
     let numbers = [
           phoneNumber HomePhone "666-111-2222",
@@ -112,3 +113,13 @@ spec = describe "Chapter 7" do
     foldMap (\v -> [v]) tree1 `shouldEqual` [4]
     foldMap (\v -> [v]) tree2 `shouldEqual` [3,4,5]
     foldMap (\v -> [v]) tree3 `shouldEqual` [1,2,3,4,5]
+
+  it "Tree traverse" do
+    traverse (\v -> Just $ v + 1) tree1 `shouldEqual` Just (Branch Leaf 5 Leaf)
+    traverse (\v -> Just $ v + 1) Leaf `shouldEqual` Just Leaf
+    traverse (\v -> if v == 4 then Nothing else Just $ v + 1) tree2 
+      `shouldEqual` Nothing
+
+  it "Tree sequence" do
+    sequence (Nothing :: Maybe (Tree Int)) `shouldEqual` Branch Leaf Nothing Leaf
+    sequence (Just tree1) `shouldEqual` (Branch Leaf (Just 4) Leaf)

@@ -60,6 +60,8 @@ instance showTree :: Show a => Show (Tree a) where
   show (Branch l x r) = 
     "(Branch " <> show l <> " " <> show x <> " " <> show r <> ")"
 
+derive instance eqTree :: Eq a => Eq (Tree a)
+
 instance functorTree :: Functor Tree where
   map f Leaf = Leaf
   map f (Branch l x r) = Branch (f <$> l) (f x) (f <$> r)
