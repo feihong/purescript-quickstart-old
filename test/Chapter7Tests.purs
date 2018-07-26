@@ -4,7 +4,7 @@ import Chapter7
 import Prelude
 
 import Control.Apply (lift2, applySecond)
-import Data.AddressBook (PhoneType(..), address, phoneNumber)
+import Data.AddressBook (PhoneType(..), address, phoneNumber, person)
 import Data.AddressBook.Validation (validatePhoneNumber)
 import Data.Array (snoc)
 import Data.Either (Either(..))
@@ -24,8 +24,11 @@ getErrors v = case toEither(v) of
 empty :: Array Int
 empty = []
 
+tree1 :: Tree Int
 tree1 = Branch Leaf 4 Leaf
+tree2 :: Tree Int
 tree2 = Branch (Branch Leaf 3 Leaf) 4 (Branch Leaf 5 Leaf)
+tree3 :: Tree Int
 tree3 = Branch 
     (Branch (Branch Leaf 1 Leaf) 2 (Branch Leaf 3 Leaf)) 
     4 
@@ -123,3 +126,29 @@ spec = describe "Chapter 7" do
   it "Tree sequence" do
     sequence (Nothing :: Maybe (Tree Int)) `shouldEqual` Branch Leaf Nothing Leaf
     sequence (Just tree1) `shouldEqual` (Branch Leaf (Just 4) Leaf)
+
+  it "validatePerson" do
+    let p1 = person "John" "Smith"
+         (Just $ address "123 Fake St." "FakeTown" "CA")
+         [ phoneNumber HomePhone "555-555-5555"
+         , phoneNumber CellPhone "555-555-0000"
+         ]
+        p2 = person "John" "Smith" 
+         Nothing
+         [ phoneNumber HomePhone "555-555-5555"
+         , phoneNumber CellPhone "555-555-0000"
+         ]
+        p3 = person "John" "Smith"
+         (Just $ address "" " " "C1")
+         [ phoneNumber HomePhone "555-555-555"
+         , phoneNumber CellPhone "555-555-0000"
+         ]
+    (validatePerson p1 # toEither) `shouldEqual` Right p1
+    (validatePerson p2 # toEither) `shouldEqual` Right p2
+    (validatePerson p3 # toEither) 
+      `shouldEqual` Left [
+        "Field Street cannot be empty",
+        "Field City cannot be whitespace",
+        "Field state must be two alphabetic characters",
+        "Field 'Number' did not match the required format"
+      ]

@@ -3,6 +3,7 @@ module Chapter7 where
 import Data.AddressBook
 import Prelude
 
+import Data.AddressBook.Validation (arrayNonEmpty, validatePhoneNumber)
 import Data.Either (Either(..))
 import Data.Foldable (foldMap, foldl, foldr)
 import Data.Maybe (Maybe(..))
@@ -52,6 +53,14 @@ validateAddress (Address o) =
   address <$> (nonWhitespace "Street" o.street *> pure o.street)
           <*> (nonWhitespace "City"   o.city   *> pure o.city)
           <*> (validateState o.state *> pure o.state)
+
+validatePerson :: Person -> V Errors Person
+validatePerson (Person o) =
+  person <$> (nonWhitespace "First Name" o.firstName *> pure o.firstName)
+         <*> (nonWhitespace "Last Name"  o.lastName  *> pure o.lastName)
+         <*> traverse validateAddress o.homeAddress
+         <*> (arrayNonEmpty "Phone Numbers" o.phones 
+                *> traverse validatePhoneNumber o.phones)          
 
 data Tree a = Leaf | Branch (Tree a) a (Tree a)
 

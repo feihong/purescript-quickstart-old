@@ -1,12 +1,15 @@
 module Data.AddressBook where
 
 import Prelude
+import Data.Maybe (Maybe(..))
 
 newtype Address = Address
   { street :: String
   , city   :: String
   , state  :: String
   }
+
+derive instance eqAddress :: Eq Address
 
 address :: String -> String -> String -> Address
 address street city state = Address { street, city, state }
@@ -34,18 +37,20 @@ phoneNumber ty number = PhoneNumber
 newtype Person = Person
   { firstName   :: String
   , lastName    :: String
-  , homeAddress :: Address
+  , homeAddress :: Maybe Address
   , phones      :: Array PhoneNumber
   }
 
-person :: String -> String -> Address -> Array PhoneNumber -> Person
+person :: String -> String -> Maybe Address -> Array PhoneNumber -> Person
 person firstName lastName homeAddress phones =
   Person { firstName, lastName, homeAddress, phones }
+
+derive instance eqPerson :: Eq Person
 
 examplePerson :: Person
 examplePerson =
   person "John" "Smith"
-         (address "123 Fake St." "FakeTown" "CA")
+         (Just $ address "123 Fake St." "FakeTown" "CA")
          [ phoneNumber HomePhone "555-555-5555"
          , phoneNumber CellPhone "555-555-0000"
          ]
