@@ -3,12 +3,13 @@ module Chapter7Tests where
 import Chapter7
 import Prelude
 
-import Control.Apply (lift2, (*>), applySecond)
+import Control.Apply (lift2, applySecond)
 import Data.AddressBook (address)
-import Data.Foldable (foldl, foldr, foldMap)
 import Data.Array (snoc)
 import Data.Either (Either(..))
+import Data.Foldable (foldl, foldr, foldMap)
 import Data.Maybe (Maybe(..))
+import Data.Traversable (sequence, traverse)
 import Data.Validation.Semigroup (V, toEither)
 import Test.Spec (Spec, describe, it)
 import Test.Spec.Assertions (shouldEqual)
@@ -65,6 +66,17 @@ spec = describe "Chapter 7" do
     (address "    " "" "IL" # validateAddress # getErrors)
       `shouldEqual` 
       ["Field Street cannot be whitespace", "Field City cannot be empty"]
+  
+  it "traverse" do
+    traverse (\v -> Just $ v * 2) [1, 2, 3] `shouldEqual` Just [2,4,6]
+    traverse (\v -> if v == 2 then Nothing else Just v) [1,2,3] 
+      `shouldEqual` Nothing
+
+  it "sequence" do
+    sequence (Just [1,2,3]) `shouldEqual` [Just 1, Just 2, Just 3]
+    sequence (Nothing :: Maybe (Array Int)) `shouldEqual` [Nothing]
+    sequence [Just 1, Just 2, Just 3] `shouldEqual` Just [1,2,3]
+    sequence [Just 1, Nothing, Just 3] `shouldEqual` Nothing
 
   it "Tree foldl" do
     foldl snoc empty Leaf `shouldEqual` []
