@@ -55,6 +55,11 @@ validateAddress (Address o) =
 
 data Tree a = Leaf | Branch (Tree a) a (Tree a)
 
+instance showTree :: Show a => Show (Tree a) where
+  show Leaf = "Leaf"
+  show (Branch l x r) = 
+    "(Branch " <> show l <> " " <> show x <> " " <> show r <> ")"
+
 instance functorTree :: Functor Tree where
   map f Leaf = Leaf
   map f (Branch l x r) = Branch (f <$> l) (f x) (f <$> r)
@@ -84,9 +89,4 @@ instance traversableTree :: Traversable Tree where
   traverse f (Branch l x r) = 
     Branch <$> traverse f l <*> f x <*> traverse f r
 
-  sequence Leaf = pure Leaf
-  sequence (Branch l x r) = pure Leaf
-
--- class (Functor t, Foldable t) <= Traversable t where
---   traverse :: forall a b f. Applicative f => (a -> f b) -> t a -> f (t b)
---   sequence :: forall a f. Applicative f => t (f a) -> f (t a)
+  sequence = traverse identity
